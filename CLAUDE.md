@@ -63,4 +63,3 @@ This is a full-stack RAG (Retrieval-Augmented Generation) chatbot for querying c
 - Always ask before saving anything to memory or external locations
 - Never access C:\Users\haddad\.claude\ without explicit permission
 - Always use `uv` to add dependencies (e.g., `uv add <package>`); never use `pip` directly
-- Never start the server (`./run.sh` or `uvicorn`) — the user starts it manually

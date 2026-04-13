@@ -90,9 +90,15 @@ class VectorStore:
         search_limit = limit if limit is not None else self.max_results
         
         try:
+            # Guard: clamp n_results to actual collection size.
+            # ChromaDB raises ValueError if n_results > number of indexed documents.
+            collection_count = self.course_content.count()
+            if collection_count == 0:
+                return SearchResults(documents=[], metadata=[], distances=[])
+            actual_limit = min(search_limit, collection_count)
             results = self.course_content.query(
                 query_texts=[query],
-                n_results=search_limit,
+                n_results=actual_limit,
                 where=filter_dict
             )
             return SearchResults.from_chroma(results)
@@ -102,6 +108,8 @@ class VectorStore:
     def _resolve_course_name(self, course_name: str) -> Optional[str]:
         """Use vector search to find best matching course by name"""
         try:
+            if self.course_catalog.count() == 0:
+                return None
             results = self.course_catalog.query(
                 query_texts=[course_name],
                 n_results=1
